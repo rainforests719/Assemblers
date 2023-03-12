@@ -6,25 +6,28 @@
 public static class FileUtil
 {
     /// <summary>
-    /// 文件大小单位转换 `Byte/K/M/G`
+    /// 文件大小单位转换 `M/G`
     /// </summary>
     /// <param name="length"> Length </param>
     /// <returns> string </returns>
-    public static string ConvertToFileSizeUnit(this long length)
+    public static string ConvertToFileSizeDisplay(this long i, int decimals = 2)
     {
-        long factSize = 0;
-        factSize = length;
-        string sizecn = string.Empty;
+        if (i < 1024 * 1024 * 1024)
+        {
+            string value = Math.Round((decimal)i / 1024m / 1024m, decimals).ToString("N" + decimals);
+            if (decimals > 0 && value.EndsWith(new string('0', decimals)))
+                value = value.Substring(0, value.Length - decimals - 1);
 
-        if (factSize < 1024.00)
-            sizecn = factSize.ToString("F2") + " Byte";
-        else if (factSize >= 1024.00 && factSize < 1048576)
-            sizecn = (factSize / 1024.00).ToString("F2") + " K";
-        else if (factSize >= 1048576 && factSize < 1073741824)
-            sizecn = (factSize / 1024.00 / 1024.00).ToString("F2") + " M";
-        else if (factSize >= 1073741824)
-            sizecn = (factSize / 1024.00 / 1024.00 / 1024.00).ToString("F2") + " G";
-        return sizecn;
+            return String.Concat(value, " MB");
+        }
+        else
+        {
+            string value = Math.Round((decimal)i / 1024m / 1024m / 1024m, decimals).ToString("N" + decimals);
+            if (decimals > 0 && value.EndsWith(new string('0', decimals)))
+                value = value.Substring(0, value.Length - decimals - 1);
+
+            return String.Concat(value, " GB");
+        }
     }
 
     /// <summary>
@@ -59,7 +62,7 @@ public static class FileUtil
     /// </summary>
     /// <param name="path"> 目录 </param>
     /// <returns> string </returns>
-    public static string NormalizePath(this string path) => path.Replace('\\', '/');
+    public static string NormalizePath(this string path) => Path.Combine(path).Replace(@"\", "/").Replace("\\", "/").Replace("//", "/");
 
     /// <summary>
     /// 获取当前目录下所有文件夹

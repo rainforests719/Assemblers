@@ -336,10 +336,10 @@ public class Sftp : ISftp, IDisposable
     public async Task Down(string path, string targetPath)
     {
         if (String.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
-        if (String.IsNullOrEmpty(targetPath))
-            targetPath = ($"{Directory.GetCurrentDirectory()}//wwwroot//TemporaryFile").NormalizePath();
-        if (!Directory.Exists(targetPath))
-            Directory.CreateDirectory(targetPath);
+
+        var newTargetPath = targetPath.Replace(Path.GetFileName(targetPath), string.Empty);
+        if (!Directory.Exists(newTargetPath)) Directory.CreateDirectory(newTargetPath);
+
         EnsureClientConnected();
         try
         {
